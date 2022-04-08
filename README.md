@@ -1,2 +1,3 @@
-# model-runner-zoo
-Examples of models plus connectors for the model runner
+# Model Runner Zoo
+
+Examples of using the Model Runner.

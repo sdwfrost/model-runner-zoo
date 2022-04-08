@@ -1,0 +1,74 @@
+{
+  "$ref": "#/definitions/ModelOutput",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ModelInput": {
+      "additionalProperties": false,
+      "description": "A generalized description of the input to an epidemiological model.",
+      "properties": {
+        "dt": {
+          "type": "number"
+        },
+        "p": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "tspan": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "u0": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "p",
+        "u0",
+        "tspan"
+      ],
+      "type": "object"
+    },
+    "ModelOutput": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/ModelInput"
+        },
+        "outputs": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "t": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "u": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "metadata",
+        "t",
+        "u"
+      ],
+      "type": "object"
+    }
+  }
+}
