@@ -4,6 +4,28 @@
   "definitions": {
     "ModelInput": {
       "additionalProperties": false,
+      "properties": {
+        "input": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SIRInput"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/SIRInput"
+              },
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "required": [
+        "input"
+      ],
+      "type": "object"
+    },
+    "SIRInput": {
+      "additionalProperties": false,
       "description": "A generalized description of the input to an epidemiological model.",
       "properties": {
         "dt": {

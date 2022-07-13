@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+
+  release:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: release
+    # This is set this way to make things easier in the Actions workflows.
+    image: image
+
+  run-model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: release
+    volumes:
+      - ./test/input.json:/data/input/input.json:ro
+      - ./output:/data/output:rw
+      - ./schema:/data/schema:ro
+

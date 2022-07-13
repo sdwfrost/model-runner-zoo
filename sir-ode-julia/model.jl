@@ -42,28 +42,36 @@ function sir_ode(u,p,t)
     [ds,di,dr]
 end
 
-# Convert inputs from JSON
-tlist = model_input["tspan"]
-tspan = (tlist[1],tlist[2])
-u0 = convert(Array{Float64,1},model_input["u0"]); # s,i,r
-p = convert(Array{Float64,1},model_input["p"]); # β,γ
+num_simulations = length(model_input)
 
-# Run model until steady state
-solver = ROS34PW3()
-prob = ODEProblem(sir_ode,u0,tspan,p)
-sol = solve(prob,solver,callback=TerminateSteadyState());
+model_output = Dict("output" => [])
+for i in 1:num_simulations
+    input = model_input["input"][i]
+    # Convert inputs from JSON
+    tlist = input["tspan"]
+    tspan = (tlist[1],tlist[2])
+    u0 = convert(Array{Float64,1}, input["u0"]); # s,i,r
+    p = convert(Array{Float64,1}, input["p"]); # β,γ
 
-# Generate outputs
-## Final size
-fs = sol[end][3]
-tss = sol.t[end]
-f = (t) -> -sol(t,idxs=2)
-opt = Optim.optimize(f,0.0,tss)
-pk = -opt.minimum
-pkt = opt.minimizer
+    # Run model until steady state
+    solver = ROS34PW3()
+    prob = ODEProblem(sir_ode,u0,tspan,p)
+    sol = solve(prob,solver,callback=TerminateSteadyState());
 
-# Extract outputs and validate
-model_output = Dict("metadata" => model_input, "t" => sol.t, "u" => [vec(sol(sol.t,idxs=i)) for i in 1:3], "outputs" => [fs, pk, pkt])
+    # Generate outputs
+    ## Final size
+    fs = sol[end][3]
+    tss = sol.t[end]
+    f = (t) -> -sol(t,idxs=2)
+    opt = Optim.optimize(f,0.0,tss)
+    pk = -opt.minimum
+    pkt = opt.minimizer
+
+    # Extract outputs and validate
+    output = Dict("metadata" => input, "t" => sol.t, "u" => [vec(sol(sol.t,idxs=i)) for i in 1:3], "outputs" => [fs, pk, pkt])
+    push!(model_output["output"],output)
+end
+
 model_output_check = validate(model_output_schema, model_output)
 if model_output_check != nothing
     display(model_output_check)
@@ -75,7 +83,7 @@ open(model_output_fn,"w") do f
     JSON.print(f,model_output)
 end
 
-display(model_output)
+#display(model_output)
 
 # Exit without errors
 exit(0)

@@ -29,6 +29,7 @@ model_output_schema = json.load(open(model_output_schema_fn, 'r'))
 # Read input and validate
 model_input = json.load(open(model_input_fn, 'r'))
 model_input_check = validate(model_input, model_input_schema)
+
 if model_input_check != None:
     sys.exit(1)
 
@@ -65,11 +66,11 @@ tol = 1e-6
 limit = lambda t, u: steady_state(t,u,p,model,tol)
 limit.terminal = True                                                                                                                                                                                   
 global flag
-
 # Count number of simulations
 num_simulations = len(model_input['input'])
 
 model_output = {'output': []}
+
 for i in range(num_simulations):
     input = model_input['input'][i]
     flag = 1
@@ -96,11 +97,12 @@ for i in range(num_simulations):
     pk = cr_vals[max_index]
     pkt = cr_pts[max_index]
 
-    # Extract outputs
+    # Extract outputs and validate
     output = {"metadata": input, "t": sol.t.tolist(), "u": sol.y.tolist(), "outputs":[fs, pk, pkt]}
     model_output['output'].append(output)
 
 model_output_check = validate(model_output, model_output_schema)
+
 if model_output_check != None:
     sys.exit(1)
 
